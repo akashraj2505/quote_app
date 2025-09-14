@@ -1,6 +1,7 @@
 import 'package:daily_learning_app/presentation/bloc/category_bloc/category_bloc.dart';
 import 'package:daily_learning_app/presentation/bloc/home_bloc/home_bloc.dart';
 import 'package:daily_learning_app/presentation/bloc/random_bloc/random_bloc.dart';
+import 'package:daily_learning_app/presentation/screens/home/category_page.dart';
 import 'package:daily_learning_app/presentation/widgets/common/error_state.dart';
 import 'package:daily_learning_app/presentation/widgets/home/category_section.dart';
 import 'package:daily_learning_app/presentation/widgets/home/custom_sliver_appbar.dart';
@@ -86,7 +87,22 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   }
 
   void _onCategorySelected(String tag) {
-    context.read<QuotesByCategoryBloc>().add(FetchQuotesByTagEvent(tag));
+    // Find the category name from the tag
+    final category = _categories.firstWhere(
+      (cat) => cat['tag'] == tag,
+      orElse: () => {'name': tag.capitalize(), 'tag': tag},
+    );
+
+    // Navigate to CategoryQuotesPage
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryQuotesPage(
+          categoryName: category['name']!,
+          categoryTag: category['tag']!,
+        ),
+      ),
+    );
   }
 
   void _onPreviousTopicTap(int index) {
@@ -244,4 +260,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     {'name': 'Happiness', 'tag': 'happiness'},
     {'name': 'Growth', 'tag': 'growth'},
   ];
+}
+
+// Extension to capitalize strings
+extension StringExtension on String {
+  String capitalize() {
+    return "${this[0].toUpperCase()}${substring(1)}";
+  }
 }
